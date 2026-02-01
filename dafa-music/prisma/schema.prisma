@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  gender      String?
+  birthday    DateTime?
+  phone       String?
+  parentPhone String?
+  lineId      String?
+  address     String?
+  createdAt   DateTime     @default(now())
+  enrollments Enrollment[]
+  lessons     Lesson[]
+  notes       String?
+}
+
+model Teacher {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  color   String?
+  lessons Lesson[]
+}
+
+model Course {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  price           Int
+  totalLessons    Int
+  durationMinutes Int          @default(60)
+  enrollments     Enrollment[]
+}
+
+model Enrollment {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId    String   @db.ObjectId
+  student      Student  @relation(fields: [studentId], references: [id])
+  courseId     String   @db.ObjectId
+  course       Course   @relation(fields: [courseId], references: [id])
+  purchaseDate DateTime @default(now())
+  totalLessons Int
+  pricePaid    Int
+  active       Boolean  @default(true)
+  lessons      Lesson[]
+}
+
+model Lesson {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  enrollmentId  String     @db.ObjectId
+  enrollment    Enrollment @relation(fields: [enrollmentId], references: [id])
+  teacherId     String     @db.ObjectId
+  teacher       Teacher    @relation(fields: [teacherId], references: [id])
+  studentId     String     @db.ObjectId
+  student       Student    @relation(fields: [studentId], references: [id])
+  startTime     DateTime
+  endTime       DateTime
+  status        Int        @default(0) // 0: Pending, 1: Attended, 2: Cancelled/Leave
+  isRescheduled Boolean    @default(false)
+}
