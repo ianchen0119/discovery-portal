@@ -2,6 +2,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+```
+docker run -d -p 27017:27017 mongo:latest --replSet rs0
+```
+
 First, run the development server:
 
 ```bash
